@@ -6,7 +6,7 @@
     <title>AI Guest Post Finder - CodexGuruu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 30px 0; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 30px 15px; }
         .main-card { background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 900px; margin: 0 auto; }
         .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 16px 16px 0 0; text-align: center; }
         .prospect-card { border-left: 4px solid #667eea; margin-bottom: 15px; }
@@ -17,7 +17,7 @@
     <div class="main-card">
         <div class="header">
             <h1>🔗 AI Guest Post Finder</h1>
-            <p class="mb-0">Find opportunities & generate personalized outreach emails</p>
+            <p class="mb-0">Find opportunities and generate personalized outreach emails</p>
         </div>
         
         <div class="p-4">
@@ -41,23 +41,25 @@
                 </div>
                 
                 <button class="btn btn-primary btn-lg w-100 mt-4" id="startBtn" onclick="startCampaign()">
-                    🚀 Find Guest Posts & Generate Emails
+                    🚀 Find Guest Posts and Generate Emails
                 </button>
                 
                 <div id="progress" class="alert alert-info mt-3" style="display:none;">
                     <div class="spinner-border spinner-border-sm me-2"></div>
-                    <span id="progressText">Finding prospects... (takes 3-5 minutes)</span>
+                    <span id="progressText">Finding prospects... This takes 3-5 minutes. Please wait.</span>
                 </div>
+                
+                <div id="errorMsg" class="alert alert-danger mt-3" style="display:none;"></div>
             </div>
             
             <div id="results" style="display:none;">
                 <div class="alert alert-success">
-                    ✅ <strong>Done!</strong> <span id="resultsCount"></span> emails ready
+                    <strong>Done!</strong> <span id="resultsCount"></span> emails ready to send
                 </div>
                 
                 <div class="mb-3">
-                    <button class="btn btn-outline-primary me-2" onclick="downloadCSV()">📥 Download CSV</button>
-                    <button class="btn btn-outline-secondary" onclick="location.reload()">🔄 New Campaign</button>
+                    <button class="btn btn-outline-primary me-2" onclick="downloadCSV()">Download CSV</button>
+                    <button class="btn btn-outline-secondary" onclick="location.reload()">New Campaign</button>
                 </div>
                 
                 <div id="emailsList"></div>
@@ -66,52 +68,97 @@
     </div>
 
     <script>
-        let currentCampaign = null;
+        var currentCampaign = null;
 
-        async function startCampaign() {
-            const data = {
-                anthropic_key: document.getElementById('anthropicKey').value,
-                your_site: document.getElementById('yourSite').value,
-                niche: document.getElementById('niche').value
-            };
+        function showError(msg) {
+            document.getElementById('errorMsg').style.display = 'block';
+            document.getElementById('errorMsg').textContent = msg;
+            document.getElementById('progress').style.display = 'none';
+            document.getElementById('startBtn').disabled = false;
+        }
 
-            if (!data.anthropic_key || !data.niche) {
+        function startCampaign() {
+            var apiKey = document.getElementById('anthropicKey').value;
+            var yourSite = document.getElementById('yourSite').value;
+            var niche = document.getElementById('niche').value;
+
+            if (!apiKey || !niche) {
                 alert('Please enter API key and niche!');
                 return;
             }
 
             document.getElementById('startBtn').disabled = true;
             document.getElementById('progress').style.display = 'block';
+            document.getElementById('errorMsg').style.display = 'none';
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/start-campaign', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
             
-            try {
-                const response = await fetch('/start-campaign', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                
-                if (result.campaign_id) {
-                    fetchCampaign(result.campaign_id);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        var result = JSON.parse(xhr.responseText);
+                        if (result.campaign_id) {
+                            setTimeout(function() {
+                                fetchCampaign(result.campaign_id);
+                            }, 2000);
+                        } else if (result.error) {
+                            showError(result.error);
+                        }
+                    } catch (e) {
+                        showError('Error parsing response: ' + e.message);
+                    }
+                } else {
+                    showError('Server error: ' + xhr.status);
                 }
-            } catch (error) {
-                alert('Error: ' + error.message);
-                document.getElementById('startBtn').disabled = false;
-                document.getElementById('progress').style.display = 'none';
-            }
+            };
+            
+            xhr.onerror = function() {
+                showError('Network error. Please try again.');
+            };
+
+            var data = JSON.stringify({
+                anthropic_key: apiKey,
+                your_site: yourSite,
+                niche: niche
+            });
+            
+            xhr.send(data);
         }
 
-        async function fetchCampaign(id) {
-            const response = await fetch('/campaign/' + id);
-            const campaign = await response.json();
+        function fetchCampaign(id) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/campaign/' + id, true);
             
-            if (campaign.status === 'completed') {
-                displayResults(campaign);
-            } else if (campaign.status === 'failed') {
-                alert('Failed: ' + (campaign.error || 'Unknown error'));
-                location.reload();
-            }
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    try {
+                        var campaign = JSON.parse(xhr.responseText);
+                        
+                        if (campaign.status === 'completed') {
+                            displayResults(campaign);
+                        } else if (campaign.status === 'failed') {
+                            showError('Campaign failed: ' + (campaign.error || 'Unknown error'));
+                        } else {
+                            // Still running, check again
+                            setTimeout(function() {
+                                fetchCampaign(id);
+                            }, 3000);
+                        }
+                    } catch (e) {
+                        showError('Error parsing campaign: ' + e.message);
+                    }
+                } else {
+                    showError('Error fetching campaign: ' + xhr.status);
+                }
+            };
+            
+            xhr.onerror = function() {
+                showError('Network error while fetching campaign.');
+            };
+            
+            xhr.send();
         }
 
         function displayResults(campaign) {
@@ -120,40 +167,68 @@
             document.getElementById('results').style.display = 'block';
             document.getElementById('resultsCount').textContent = campaign.emails.length;
 
-            const html = campaign.emails.map((e, i) => `
-                <div class="card prospect-card">
-                    <div class="card-header bg-light">
-                        <strong>#${i+1}</strong> ${e.prospect.title.substring(0, 60)}
-                        <br><small><a href="${e.prospect.url}" target="_blank">${e.prospect.url}</a></small>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Subject:</strong> ${e.subject}</p>
-                        <div class="email-body">${e.body}</div>
-                        <button class="btn btn-sm btn-success mt-2" onclick="copyEmail(${i})">📋 Copy Email</button>
-                    </div>
-                </div>
-            `).join('');
+            var html = '';
+            for (var i = 0; i < campaign.emails.length; i++) {
+                var e = campaign.emails[i];
+                html += '<div class="card prospect-card">';
+                html += '<div class="card-header bg-light">';
+                html += '<strong>#' + (i + 1) + '</strong> ' + e.prospect.title.substring(0, 60);
+                html += '<br><small><a href="' + e.prospect.url + '" target="_blank">' + e.prospect.url + '</a></small>';
+                html += '</div>';
+                html += '<div class="card-body">';
+                html += '<p><strong>Subject:</strong> ' + e.subject + '</p>';
+                html += '<div class="email-body">' + e.body + '</div>';
+                html += '<button class="btn btn-sm btn-success mt-2" onclick="copyEmail(' + i + ')">Copy Email</button>';
+                html += '</div>';
+                html += '</div>';
+            }
 
             document.getElementById('emailsList').innerHTML = html;
         }
 
         function copyEmail(i) {
-            const e = currentCampaign.emails[i];
-            navigator.clipboard.writeText('Subject: ' + e.subject + '\n\n' + e.body);
-            alert('Copied!');
+            var e = currentCampaign.emails[i];
+            var text = 'Subject: ' + e.subject + '\n\n' + e.body;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(function() {
+                    alert('Email copied!');
+                });
+            } else {
+                // Fallback for older browsers
+                var textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Email copied!');
+            }
         }
 
         function downloadCSV() {
-            let csv = 'Site,URL,Subject,Body\n';
-            currentCampaign.emails.forEach(e => {
-                csv += `"${e.prospect.title}","${e.prospect.url}","${e.subject}","${e.body.replace(/"/g, '""')}"\n`;
-            });
+            if (!currentCampaign || !currentCampaign.emails) {
+                alert('No data to download');
+                return;
+            }
             
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
+            var csv = 'Site,URL,Subject,Body\n';
+            for (var i = 0; i < currentCampaign.emails.length; i++) {
+                var e = currentCampaign.emails[i];
+                var title = e.prospect.title.replace(/"/g, '""');
+                var body = e.body.replace(/"/g, '""').replace(/\n/g, ' ');
+                var subject = e.subject.replace(/"/g, '""');
+                csv += '"' + title + '","' + e.prospect.url + '","' + subject + '","' + body + '"\n';
+            }
+            
+            var blob = new Blob([csv], { type: 'text/csv' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
             a.download = 'backlink-emails.csv';
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
         }
     </script>
 </body>
