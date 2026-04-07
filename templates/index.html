@@ -5,61 +5,225 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Guest Post Finder - CodexGuruu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 30px 15px; }
-        .main-card { background: white; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 900px; margin: 0 auto; }
-        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 16px 16px 0 0; text-align: center; }
-        .prospect-card { border-left: 4px solid #667eea; margin-bottom: 15px; }
-        .email-body { background: #f8f9fa; padding: 15px; border-radius: 8px; white-space: pre-wrap; font-family: monospace; font-size: 14px; }
+        body { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh; 
+            padding: 30px 15px; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .main-card { 
+            background: white; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+            max-width: 1000px; 
+            margin: 0 auto; 
+        }
+        .header { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 30px; 
+            border-radius: 20px 20px 0 0; 
+            text-align: center; 
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.95;
+        }
+        .prospect-card { 
+            border-left: 5px solid #667eea; 
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .prospect-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .prospect-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .prospect-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 0.9em;
+        }
+        .prospect-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+            margin: 5px 0;
+        }
+        .prospect-url {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9em;
+            word-break: break-all;
+        }
+        .prospect-url:hover {
+            text-decoration: underline;
+        }
+        .write-for-us-link {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 12px;
+            background: #e7f3ff;
+            color: #0066cc;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        .write-for-us-link:hover {
+            background: #cce5ff;
+            color: #0052a3;
+        }
+        .email-section {
+            padding: 20px;
+        }
+        .subject-line {
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+        .subject-line strong {
+            color: #856404;
+        }
+        .email-body { 
+            background: #f8f9fa; 
+            padding: 20px; 
+            border-radius: 10px; 
+            white-space: pre-wrap; 
+            font-family: 'Courier New', monospace; 
+            font-size: 14px;
+            line-height: 1.6;
+            border: 1px solid #e9ecef;
+        }
+        .action-buttons {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-copy {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-copy:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+        .btn-visit {
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        .btn-visit:hover {
+            background: #5568d3;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .stats-badge {
+            display: inline-block;
+            background: #e7f3ff;
+            color: #0066cc;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            .prospect-title {
+                font-size: 1em;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="main-card">
         <div class="header">
-            <h1>🔗 AI Guest Post Finder</h1>
-            <p class="mb-0">Find opportunities and generate personalized outreach emails</p>
+            <h1><i class="fas fa-link"></i> AI Guest Post Finder</h1>
+            <p>Find verified opportunities and generate personalized outreach emails powered by Claude AI</p>
         </div>
         
         <div class="p-4">
             <div id="setupForm">
                 <div class="row g-3">
                     <div class="col-12">
-                        <label class="form-label"><strong>Anthropic API Key</strong></label>
-                        <input type="password" class="form-control" id="anthropicKey" placeholder="sk-ant-...">
+                        <label class="form-label"><strong><i class="fas fa-key"></i> Anthropic API Key</strong></label>
+                        <input type="password" class="form-control form-control-lg" id="anthropicKey" placeholder="sk-ant-...">
                         <small class="text-muted">Get free $5 credit: <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></small>
                     </div>
                     
                     <div class="col-md-6">
-                        <label class="form-label"><strong>Your Website</strong></label>
-                        <input type="url" class="form-control" id="yourSite" value="https://codexguruu.com">
+                        <label class="form-label"><strong><i class="fas fa-globe"></i> Your Website</strong></label>
+                        <input type="url" class="form-control form-control-lg" id="yourSite" value="https://codexguruu.com">
                     </div>
                     
                     <div class="col-md-6">
-                        <label class="form-label"><strong>Your Niche</strong></label>
-                        <input type="text" class="form-control" id="niche" placeholder="e.g., Python, SEO, WordPress">
+                        <label class="form-label"><strong><i class="fas fa-tag"></i> Your Niche</strong></label>
+                        <input type="text" class="form-control form-control-lg" id="niche" placeholder="e.g., Python, SEO, WordPress">
                     </div>
                 </div>
                 
-                <button class="btn btn-primary btn-lg w-100 mt-4" id="startBtn" onclick="startCampaign()">
-                    🚀 Find Guest Posts and Generate Emails
+                <button class="btn btn-primary btn-lg w-100 mt-4" id="startBtn" onclick="startCampaign()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; padding: 15px;">
+                    <i class="fas fa-rocket"></i> Find Guest Posts & Generate Emails
                 </button>
                 
                 <div id="progress" class="alert alert-info mt-3" style="display:none;">
                     <div class="spinner-border spinner-border-sm me-2"></div>
-                    <span id="progressText">Finding prospects... This takes 3-5 minutes. Please wait.</span>
+                    <span id="progressText">Finding prospects and generating personalized emails... This takes 3-5 minutes. Please wait.</span>
                 </div>
                 
                 <div id="errorMsg" class="alert alert-danger mt-3" style="display:none;"></div>
             </div>
             
             <div id="results" style="display:none;">
-                <div class="alert alert-success">
-                    <strong>Done!</strong> <span id="resultsCount"></span> emails ready to send
+                <div class="alert alert-success mb-4">
+                    <i class="fas fa-check-circle"></i> <strong>Campaign Complete!</strong> 
+                    <span id="resultsCount"></span> personalized emails ready to send
+                    <span class="stats-badge" id="prospectCount"></span>
                 </div>
                 
-                <div class="mb-3">
-                    <button class="btn btn-outline-primary me-2" onclick="downloadCSV()">Download CSV</button>
-                    <button class="btn btn-outline-secondary" onclick="location.reload()">New Campaign</button>
+                <div class="mb-4 d-flex gap-2 flex-wrap">
+                    <button class="btn btn-outline-primary" onclick="downloadCSV()">
+                        <i class="fas fa-download"></i> Download CSV
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="location.reload()">
+                        <i class="fas fa-plus"></i> New Campaign
+                    </button>
+                    <button class="btn btn-outline-info" onclick="copyAllEmails()">
+                        <i class="fas fa-copy"></i> Copy All Emails
+                    </button>
                 </div>
                 
                 <div id="emailsList"></div>
@@ -72,7 +236,7 @@
 
         function showError(msg) {
             document.getElementById('errorMsg').style.display = 'block';
-            document.getElementById('errorMsg').textContent = msg;
+            document.getElementById('errorMsg').innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + msg;
             document.getElementById('progress').style.display = 'none';
             document.getElementById('startBtn').disabled = false;
         }
@@ -83,7 +247,7 @@
             var niche = document.getElementById('niche').value;
 
             if (!apiKey || !niche) {
-                alert('Please enter API key and niche!');
+                alert('Please enter both API key and niche!');
                 return;
             }
 
@@ -100,9 +264,11 @@
                     try {
                         var result = JSON.parse(xhr.responseText);
                         if (result.campaign_id) {
+                            document.getElementById('progressText').innerHTML = 
+                                'Campaign #' + result.campaign_id + ' started! Checking progress every 3 seconds...';
                             setTimeout(function() {
-                                fetchCampaign(result.campaign_id);
-                            }, 2000);
+                                checkCampaign(result.campaign_id);
+                            }, 3000);
                         } else if (result.error) {
                             showError(result.error);
                         }
@@ -115,19 +281,17 @@
             };
             
             xhr.onerror = function() {
-                showError('Network error. Please try again.');
+                showError('Network error. Please check your connection and try again.');
             };
 
-            var data = JSON.stringify({
+            xhr.send(JSON.stringify({
                 anthropic_key: apiKey,
                 your_site: yourSite,
                 niche: niche
-            });
-            
-            xhr.send(data);
+            }));
         }
 
-        function fetchCampaign(id) {
+        function checkCampaign(id) {
             var xhr = new XMLHttpRequest();
             xhr.open('GET', '/campaign/' + id, true);
             
@@ -140,22 +304,27 @@
                             displayResults(campaign);
                         } else if (campaign.status === 'failed') {
                             showError('Campaign failed: ' + (campaign.error || 'Unknown error'));
-                        } else {
-                            // Still running, check again
+                        } else if (campaign.status === 'running') {
+                            // Update progress text
+                            var emailCount = campaign.emails ? campaign.emails.length : 0;
+                            document.getElementById('progressText').innerHTML = 
+                                'Processing... Generated ' + emailCount + ' emails so far. Please wait...';
+                            
+                            // Check again in 3 seconds
                             setTimeout(function() {
-                                fetchCampaign(id);
+                                checkCampaign(id);
                             }, 3000);
                         }
                     } catch (e) {
-                        showError('Error parsing campaign: ' + e.message);
+                        showError('Error checking campaign: ' + e.message);
                     }
                 } else {
-                    showError('Error fetching campaign: ' + xhr.status);
+                    showError('Error fetching campaign status: ' + xhr.status);
                 }
             };
             
             xhr.onerror = function() {
-                showError('Network error while fetching campaign.');
+                showError('Network error while checking campaign.');
             };
             
             xhr.send();
@@ -166,19 +335,41 @@
             document.getElementById('setupForm').style.display = 'none';
             document.getElementById('results').style.display = 'block';
             document.getElementById('resultsCount').textContent = campaign.emails.length;
+            document.getElementById('prospectCount').textContent = campaign.prospects.length + ' prospects found';
 
             var html = '';
+            
             for (var i = 0; i < campaign.emails.length; i++) {
                 var e = campaign.emails[i];
+                var prospect = e.prospect;
+                var writePageUrl = e.contact.write_page || prospect.url;
+                
                 html += '<div class="card prospect-card">';
-                html += '<div class="card-header bg-light">';
-                html += '<strong>#' + (i + 1) + '</strong> ' + e.prospect.title.substring(0, 60);
-                html += '<br><small><a href="' + e.prospect.url + '" target="_blank">' + e.prospect.url + '</a></small>';
+                html += '<div class="prospect-header">';
+                html += '<span class="prospect-number">#' + (i + 1) + '</span>';
+                html += '<div class="prospect-title">' + prospect.title + '</div>';
+                html += '<a href="' + prospect.url + '" target="_blank" class="prospect-url" rel="noopener">';
+                html += '<i class="fas fa-external-link-alt"></i> ' + prospect.url;
+                html += '</a>';
+                html += '<br>';
+                html += '<a href="' + writePageUrl + '" target="_blank" class="write-for-us-link" rel="noopener">';
+                html += '<i class="fas fa-pen"></i> Write For Us Page';
+                html += '</a>';
                 html += '</div>';
-                html += '<div class="card-body">';
-                html += '<p><strong>Subject:</strong> ' + e.subject + '</p>';
+                
+                html += '<div class="email-section">';
+                html += '<div class="subject-line">';
+                html += '<strong>Subject:</strong> ' + e.subject;
+                html += '</div>';
                 html += '<div class="email-body">' + e.body + '</div>';
-                html += '<button class="btn btn-sm btn-success mt-2" onclick="copyEmail(' + i + ')">Copy Email</button>';
+                html += '<div class="action-buttons">';
+                html += '<button class="btn-copy" onclick="copyEmail(' + i + ')">';
+                html += '<i class="fas fa-copy"></i> Copy Email';
+                html += '</button>';
+                html += '<a href="' + writePageUrl + '" target="_blank" class="btn-visit" rel="noopener">';
+                html += '<i class="fas fa-external-link-alt"></i> Visit Submission Page';
+                html += '</a>';
+                html += '</div>';
                 html += '</div>';
                 html += '</div>';
             }
@@ -192,17 +383,48 @@
             
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(text).then(function() {
-                    alert('Email copied!');
+                    alert('✅ Email copied to clipboard!');
                 });
             } else {
-                // Fallback for older browsers
                 var textarea = document.createElement('textarea');
                 textarea.value = text;
                 document.body.appendChild(textarea);
                 textarea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
-                alert('Email copied!');
+                alert('✅ Email copied to clipboard!');
+            }
+        }
+
+        function copyAllEmails() {
+            if (!currentCampaign || !currentCampaign.emails) {
+                alert('No emails to copy');
+                return;
+            }
+            
+            var allText = '';
+            for (var i = 0; i < currentCampaign.emails.length; i++) {
+                var e = currentCampaign.emails[i];
+                allText += '='.repeat(60) + '\n';
+                allText += '#' + (i + 1) + ' - ' + e.prospect.title + '\n';
+                allText += 'URL: ' + e.prospect.url + '\n';
+                allText += 'Write Page: ' + (e.contact.write_page || e.prospect.url) + '\n\n';
+                allText += 'Subject: ' + e.subject + '\n\n';
+                allText += e.body + '\n\n';
+            }
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(allText).then(function() {
+                    alert('✅ All ' + currentCampaign.emails.length + ' emails copied!');
+                });
+            } else {
+                var textarea = document.createElement('textarea');
+                textarea.value = allText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('✅ All ' + currentCampaign.emails.length + ' emails copied!');
             }
         }
 
@@ -212,23 +434,26 @@
                 return;
             }
             
-            var csv = 'Site,URL,Subject,Body\n';
+            var csv = 'Number,Site,URL,Write For Us Page,Subject,Body\n';
             for (var i = 0; i < currentCampaign.emails.length; i++) {
                 var e = currentCampaign.emails[i];
-                var title = e.prospect.title.replace(/"/g, '""');
-                var body = e.body.replace(/"/g, '""').replace(/\n/g, ' ');
-                var subject = e.subject.replace(/"/g, '""');
-                csv += '"' + title + '","' + e.prospect.url + '","' + subject + '","' + body + '"\n';
+                var title = (e.prospect.title || '').replace(/"/g, '""');
+                var body = (e.body || '').replace(/"/g, '""').replace(/\n/g, ' ');
+                var subject = (e.subject || '').replace(/"/g, '""');
+                var writeUrl = e.contact.write_page || e.prospect.url;
+                
+                csv += (i + 1) + ',"' + title + '","' + e.prospect.url + '","' + writeUrl + '","' + subject + '","' + body + '"\n';
             }
             
             var blob = new Blob([csv], { type: 'text/csv' });
             var url = URL.createObjectURL(blob);
             var a = document.createElement('a');
             a.href = url;
-            a.download = 'backlink-emails.csv';
+            a.download = 'guest-post-outreach-' + Date.now() + '.csv';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
     </script>
 </body>
